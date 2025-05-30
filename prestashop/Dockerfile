@@ -15,6 +15,14 @@ ENV LANG=fr_FR.UTF-8
 ENV LANGUAGE=fr_FR:fr
 ENV LC_ALL=fr_FR.UTF-8
 
+# Installation du thème Hummingbird
+RUN cd /tmp && \
+    wget -O hummingbird.zip "https://github.com/PrestaShop/hummingbird/releases/latest/download/hummingbird.zip" && \
+    mkdir -p /var/www/html/themes && \
+    unzip hummingbird.zip -d /var/www/html/themes/ && \
+    chown -R www-data:www-data /var/www/html/themes/ && \
+    rm hummingbird.zip
+
 # Retour à l'utilisateur www-data (sécurité)
 USER www-data
 
