@@ -20,7 +20,7 @@ prestashop-infra/
 ## État d'avancement
 
 - [x] Structure initiale
-- [ ] Configuration PrestaShop
-- [ ] Monitoring
+- [x] Configuration PrestaShop
+- [x] Monitoring
 - [ ] Backup
-- [ ] CI/CD
+- [x] CI/CD
