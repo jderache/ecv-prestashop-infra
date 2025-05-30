@@ -1,0 +1,74 @@
+services:
+  # Base de données MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: prestashop-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - prestashop-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Application PrestaShop
+  prestashop:
+    build: ./prestashop
+    container_name: prestashop-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      DB_SERVER: mysql
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWD: ${MYSQL_PASSWORD}
+      ADMIN_MAIL: ${PRESTASHOP_ADMIN_EMAIL}
+      ADMIN_PASSWD: ${PRESTASHOP_ADMIN_PASSWORD}
+      PS_INSTALL_AUTO: ${PS_INSTALL_AUTO}
+      PS_DOMAIN: ${PS_DOMAIN}
+      PS_THEME: ${PS_THEME}
+      PS_FOLDER_ADMIN: ${PS_FOLDER_ADMIN}
+      PS_FOLDER_INSTALL: ${PS_FOLDER_INSTALL}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - prestashop_data:/var/www/html
+    networks:
+      - prestashop-network
+
+  # phpMyAdmin pour gérer MySQL
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: prestashop-phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: ${MYSQL_USER}
+      PMA_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - prestashop-network
+
+volumes:
+  mysql_data:
+    driver: local
+  prestashop_data:
+    driver: local
+
+networks:
+  prestashop-network:
+    driver: bridge
