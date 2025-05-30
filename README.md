@@ -1,6 +1,7 @@
 # Infrastructure PrestaShop Dockerisée
 ## Structure du projet
 
+```
 prestashop-infra/
 ├── docker-compose.yml        # Configuration principale
 ├── .env                      # Variables d'environnement
@@ -14,6 +15,7 @@ prestashop-infra/
 └── .github/                # CI/CD
 └── workflows/
 └── deploy.yml
+```
 
 ## État d'avancement
 
