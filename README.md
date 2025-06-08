@@ -70,6 +70,20 @@ docker compose up -d
 | Grafana | http://localhost:3000 | 3000 |
 | Prometheus | http://localhost:9090 | 9090 |
 
+## 📸 Screenshots
+
+### Docker Desktop
+![Docker Desktop](https://image.noelshack.com/fichiers/2025/23/7/1749413304-capture-d-e-cran-2025-06-08-a-21-55-44.png)
+
+### PrestaShop
+![PrestaShop](https://image.noelshack.com/fichiers/2025/23/7/1749413304-capture-d-e-cran-2025-06-08-a-21-55-53.jpg)
+
+### Grafana Dashboard
+![Grafana](https://image.noelshack.com/fichiers/2025/23/7/1749413304-capture-d-e-cran-2025-06-08-a-21-56-51.png)
+
+### CI/CD Pipeline
+![CI/CD](https://image.noelshack.com/fichiers/2025/23/7/1749413304-capture-d-e-cran-2025-06-08-a-22-07-43.png)
+
 ## 📁 Structure
 
 ```
