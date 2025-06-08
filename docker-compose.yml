@@ -22,6 +22,25 @@ services:
       timeout: 20s
       retries: 10
 
+  # Service de backup MySQL automatique
+  mysql-backup:
+    build: ./backup
+    container_name: prestashop-mysql-backup
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      BACKUP_MAX_FILES: ${BACKUP_MAX_FILES:-10}
+    volumes:
+      - backup_data:/backups
+    networks:
+      - prestashop-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
   # Application PrestaShop
   prestashop:
     build: ./prestashop
@@ -182,6 +201,8 @@ volumes:
   alertmanager_data:
     driver: local
   grafana_data:
+    driver: local
+  backup_data:
     driver: local
 
 networks:

@@ -1,26 +1,104 @@
 # Infrastructure PrestaShop Dockerisée
-## Structure du projet
+
+Infrastructure complète PrestaShop avec monitoring, backup automatique et CI/CD.
+
+## 🏗️ Architecture
 
 ```
-prestashop-infra/
-├── docker-compose.yml        # Configuration principale
-├── .env                      # Variables d'environnement
-├── README.md                # Documentation
-├── prestashop/              # Configuration PrestaShop
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   PrestaShop    │    │     MySQL       │    │   phpMyAdmin    │
+│   (port 8080)   │◄──►│   (database)    │◄──►│   (port 8081)   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 │
+┌─────────────────┐    ┌─────────▼───────┐    ┌─────────────────┐
+│   Prometheus    │◄──►│   Grafana       │    │   Alertmanager  │
+│   (port 9090)   │    │   (port 3000)   │    │   (port 9093)   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         └───────────────────────┼───────────────────────┘
+                                 │
+         ┌───────────────────────┼───────────────────────┐
+         │                       │                       │
+┌─────────▼───────┐    ┌─────────▼───────┐    ┌─────────▼───────┐
+│   cAdvisor      │    │  Node Exporter  │    │  MySQL Backup   │
+│   (port 8082)   │    │   (port 9100)   │    │   (cron 6h)     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+**Services :**
+- **App** : PrestaShop + MySQL + phpMyAdmin
+- **Monitoring** : Prometheus + Grafana + cAdvisor + Node Exporter
+- **Alertes** : Alertmanager  
+- **Backup** : Sauvegarde MySQL automatique
+- **CI/CD** : GitHub Actions → Docker Hub
+
+## 🚀 Installation
+
+### 1. Configuration
+Créer `.env` :
+```bash
+MYSQL_ROOT_PASSWORD=root_secure
+MYSQL_DATABASE=prestashop
+MYSQL_USER=prestashop_user
+MYSQL_PASSWORD=prestashop_secure
+
+PRESTASHOP_ADMIN_EMAIL=admin@example.com
+PRESTASHOP_ADMIN_PASSWORD=admin_secure
+PS_INSTALL_AUTO=1
+PS_DOMAIN=localhost:8080
+PS_THEME=classic
+PS_FOLDER_ADMIN=admin123
+PS_FOLDER_INSTALL=install
+
+GF_SECURITY_ADMIN_PASSWORD=grafana_admin
+BACKUP_MAX_FILES=10
+```
+
+### 2. Démarrage
+```bash
+docker compose up -d
+```
+
+## 🌐 Accès
+
+| Service | URL | Port |
+|---------|-----|------|
+| PrestaShop | http://localhost:8080 | 8080 |
+| phpMyAdmin | http://localhost:8081 | 8081 |
+| Grafana | http://localhost:3000 | 3000 |
+| Prometheus | http://localhost:9090 | 9090 |
+
+## 📁 Structure
+
+```
+ecv-prestashop-infra/
+├── docker compose.yml
+├── .env
+├── prestashop/
 │   └── Dockerfile
-├── monitoring/              # Configuration monitoring
-│   └── prometheus.yml
-├── backup/                  # Scripts de sauvegarde
-│   └── backup.sh
-└── .github/                # CI/CD
-└── workflows/
-└── deploy.yml
+├── monitoring/
+│   ├── prometheus/
+│   │   ├── prometheus.yml
+│   │   └── alert_rules.yml
+│   ├── grafana/
+│   │   ├── dashboards/
+│   │   └── provisioning/
+│   └── alertmanager/
+│       └── alertmanager.yml
+├── backup/
+│   ├── Dockerfile
+│   ├── backup.sh
+│   └── crontab
+└── .github/workflows/
+    └── deploy.yml
 ```
 
-## État d'avancement
+## 📊 Services
 
-- [x] Structure initiale
-- [x] Configuration PrestaShop
-- [x] Monitoring
-- [ ] Backup
-- [x] CI/CD
+- **PrestaShop** : Application e-commerce
+- **MySQL** : Base de données
+- **Grafana/Prometheus** : Monitoring
+- **Backup** : Sauvegarde MySQL (6h)
+- **CI/CD** : GitHub Actions → Docker Hub
